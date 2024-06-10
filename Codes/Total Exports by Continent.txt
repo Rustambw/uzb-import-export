@@ -1,0 +1,45 @@
+```{r}
+# Exports: Identify the Continent to which Uzbekistan Exports the Most
+# Read the cleaned export data
+export_data <- read.csv("/cloud/project/cleaned_uz_export.csv")
+```
+
+```{r}
+# Add continent information using the 'countrycode' package
+export_data <- export_data %>%
+  mutate(Continent = countrycode(Territories, origin = "country.name", destination = "continent"))
+```
+
+```{r}
+# Pivot the data to long format
+export_long <- export_data %>%
+  pivot_longer(cols = starts_with("X"), names_to = "year", values_to = "export_value")
+```
+
+```{r}
+# Summarize total exports by continent
+export_summary <- export_long %>%
+  group_by(Continent) %>%
+  summarize(total_export = sum(export_value, na.rm = TRUE))
+```
+
+```{r}
+# Find the continent with the highest export share
+export_summary <- export_summary %>%
+  arrange(desc(total_export))
+```
+
+```{r}
+print(export_summary)
+```
+
+```{r}
+# Visualization
+ggplot(export_summary, aes(x = reorder(Continent, -total_export), y = total_export, fill = Continent)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Total Exports by Continent",
+       x = "Continent",
+       y = "Total Export Value") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```

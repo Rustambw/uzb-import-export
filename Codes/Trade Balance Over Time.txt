@@ -1,0 +1,14 @@
+```{r}
+# Calculate trade balance
+combined_data <- combined_data %>%
+  mutate(Trade_Balance = Total_Export - Total_Import)
+
+# Plot trade balance over time
+ggplot(combined_data, aes(x = Year, y = Trade_Balance)) +
+  geom_line(color = "green", size = 1) +
+  geom_point(color = "green") +
+  labs(title = "Trade Balance Over Time",
+       x = "Year",
+       y = "Trade Balance (USD)") +
+  theme_minimal()
+```

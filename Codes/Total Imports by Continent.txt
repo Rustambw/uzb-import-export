@@ -1,0 +1,55 @@
+```{r}
+# Imports: Identify the Continent from which Uzbekistan Imports the Most
+# Load necessary libraries
+install.packages("countrycode")
+library(dplyr)
+library(tidyr)
+library(countrycode)
+library(ggplot2)
+```
+
+```{r}
+# Read the cleaned import data
+import_data <- read.csv("/cloud/project/cleaned_uz_import.csv")
+```
+
+```{r}
+# Add continent information using the 'countrycode' package
+import_data <- import_data %>%
+  mutate(Continent = countrycode(Territories, origin = "country.name", destination = "continent"))
+```
+
+```{r}
+# Pivot the data to long format
+import_long <- import_data %>%
+  pivot_longer(cols = starts_with("X"), names_to = "year", values_to = "import_value")
+```
+
+```{r}
+# Summarize total imports by continent
+import_summary <- import_long %>%
+  group_by(Continent) %>%
+  summarize(total_import = sum(import_value, na.rm = TRUE))
+```
+
+```{r}
+# Find the continent with the highest import share
+import_summary <- import_summary %>%
+  arrange(desc(total_import))
+```
+
+```{r}
+print(import_summary)
+
+```
+
+```{r}
+# Visualization
+ggplot(import_summary, aes(x = reorder(Continent, -total_import), y = total_import, fill = Continent)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Total Imports by Continent",
+       x = "Continent",
+       y = "Total Import Value") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```

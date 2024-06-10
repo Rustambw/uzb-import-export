@@ -1,0 +1,21 @@
+```{r}
+# Combine export and import data for comparative analysis
+combined_data <- yearly_exports %>%
+  rename(Total_Export = total_export) %>%
+  left_join(yearly_imports, by = "Year") %>%
+  rename(Total_Import = total_import)
+```
+
+```{r}
+# Plot exports vs imports over time
+ggplot(combined_data) +
+  geom_line(aes(x = Year, y = Total_Export, color = "Exports"), size = 1) +
+  geom_line(aes(x = Year, y = Total_Import, color = "Imports"), size = 1) +
+  geom_point(aes(x = Year, y = Total_Export, color = "Exports")) +
+  geom_point(aes(x = Year, y = Total_Import, color = "Imports")) +
+  labs(title = "Exports vs Imports Over Time",
+       x = "Year",
+       y = "Value (USD)",
+       color = "Legend") +
+  theme_minimal()
+```

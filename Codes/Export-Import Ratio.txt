@@ -1,0 +1,44 @@
+# 2.1 Calculating the Export/Import Ratio
+# Pivot the data to long format
+import_long <- import_data %>%
+  pivot_longer(cols = starts_with("X"), names_to = "year", values_to = "import_value")
+```
+
+```{r}
+export_long <- export_data %>%
+  pivot_longer(cols = starts_with("X"), names_to = "year", values_to = "export_value")
+```
+
+```{r}
+# Convert year columns to numeric
+import_long$year <- as.numeric(sub("X", "", import_long$year))
+export_long$year <- as.numeric(sub("X", "", export_long$year))
+```
+
+```{r}
+# Summarize total imports and exports by year
+import_summary <- import_long %>%
+  group_by(year) %>%
+  summarize(total_import = sum(import_value, na.rm = TRUE))
+
+export_summary <- export_long %>%
+  group_by(year) %>%
+  summarize(total_export = sum(export_value, na.rm = TRUE))
+```
+
+```{r}
+#Calculate the Export/Import Ratio:
+# Combine import and export summaries
+trade_summary <- merge(import_summary, export_summary, by = "year")
+```
+
+```{r}
+# Calculate the export/import ratio
+trade_summary <- trade_summary %>%
+  mutate(export_import_ratio = total_export / total_import)
+```
+
+```{r}
+# Print the trade summary
+print(trade_summary)
+```

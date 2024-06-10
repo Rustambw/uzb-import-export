@@ -1,0 +1,52 @@
+```{r}
+# Install necessary libraries
+install.packages("tidyverse")
+install.packages("ggplot2")
+```
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+# Define file paths
+export_file_path <- "cleaned_uz_export.csv"
+import_file_path <- "cleaned_uz_import.csv"
+```
+
+```{r}
+# Read the cleaned CSV files
+cleaned_export_data <- read_csv(export_file_path)
+cleaned_import_data <- read_csv(import_file_path)
+```
+
+```{r}
+# Calculate the total export values for each year
+yearly_exports <- cleaned_export_data %>%
+  pivot_longer(cols = `X2000`:`X2021`, names_to = "Year", values_to = "Export") %>%
+  group_by(Year) %>%
+  summarise(total_export = sum(Export, na.rm = TRUE)) %>%
+  mutate(Year = as.numeric(str_remove(Year, "X")))
+```
+
+```{r}
+# Calculate the total import values for each year
+yearly_imports <- cleaned_import_data %>%
+  pivot_longer(cols = `X2000`:`X2021`, names_to = "Year", values_to = "Import") %>%
+  group_by(Year) %>%
+  summarise(total_import = sum(Import, na.rm = TRUE)) %>%
+  mutate(Year = as.numeric(str_remove(Year, "X")))
+```
+
+```{r}
+# Plot total exports over time
+ggplot(yearly_exports, aes(x = Year, y = total_export)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(color = "blue") +
+  labs(title = "Total Exports Over Time",
+       x = "Year",
+       y = "Total Export Value (USD)") +
+  theme_minimal()
+```
